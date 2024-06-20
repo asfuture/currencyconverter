@@ -4,6 +4,7 @@ import { HttpClient, } from '@angular/common/http';
 
 import { CotacaoSimplificada } from '../../model/cotacao';
 import { DolarCanadenseService } from '../../service/dolar-canadense.service';
+import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
 
@@ -20,12 +21,16 @@ valorDolar: CotacaoSimplificada[] = [];
 
 private unsubscribe = new Subject<void>();
 
-  constructor( private dolarCanadenseService:DolarCanadenseService) {}
+  constructor( 
+    private dolarCanadenseService:DolarCanadenseService,
+    private route:Router
+    ) {}
   ngOnInit(): void {
       this.getValor()
 
       setInterval(() => {
         this.getValor();
+        this.route.navigateByUrl('');
         console.log('Chamando a função getvalor a cada 3 minutos')
       }, 180000)
   }
