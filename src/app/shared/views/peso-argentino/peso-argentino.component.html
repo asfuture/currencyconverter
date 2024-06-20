@@ -1,21 +1,24 @@
 <section class="cardPeso">
-    <div class="container">
+    <div class="container" *ngIf="valorPeso && valorPeso.length; else loading">
         <div class="headerPeso">
             <p>Peso Argentino</p>
         </div>
         <div class="bodyPeso">
-            <span>R$0,05</span>
+            <span [ngClass]="bidClass(valorPeso[0].ask)">{{ valorPeso[0].ask | currency: 'BRL':  'symbol' : '1.2-2' }}</span>
         </div>
         <div class="footerPeso">
             <div class="texto1">
                 <p class="variacao">Variação (%)</p>
-                <p class="variacaoValor">0,2</p>
+                <p class="variacaoValor">{{ valorPeso[0].pctChange }}</p>
             </div>
             <div class="texto2">
                 <p class="textoAtualiza">Atualizado</p>
-                <p class="time">08:01:23</p>
+                <p class="time">{{  valorPeso[0] ? formatTimestamp(valorPeso[0].timestamp) : '' }}</p>
             </div>
         </div>
         
     </div>
+    <ng-template #loading>
+        <p>Carregando valores.</p>
+    </ng-template>
 </section>
