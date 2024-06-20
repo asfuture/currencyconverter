@@ -1,21 +1,25 @@
 <section class="cardDolar">
-    <div class="container">
+    <div class="container" *ngIf="valorDolar && valorDolar.length; else loading">
         <div class="headerDolar">
             <p>Dólar Canadense</p>
         </div>
         <div class="bodyDolar">
-            <span>R$4,37</span>
+            <span [ngClass]="bidClass(valorDolar[0].ask)">{{ valorDolar[0].ask | currency: 'BRL':  'symbol' : '1.2-2' }}</span>
         </div>
         <div class="footerDolar">
             <div class="texto1">
                 <p class="variacao">Variação (%)</p>
-                <p class="variacaoValor">-0,11</p>
+                <p class="variacaoValor">{{valorDolar[0].pctChange}}</p>
             </div>
             <div class="texto2">
                 <p class="textoAtualiza">Atualizado</p>
-                <p class="time">08:01:23</p>
+                <p class="time">{{  valorDolar[0] ? formatTimestamp(valorDolar[0].timestamp) : '' }}</p>
             </div>
         </div>
         
     </div>
+    <ng-template #loading>
+        <p>Carregando valores.</p>
+    </ng-template>
+    
 </section>
