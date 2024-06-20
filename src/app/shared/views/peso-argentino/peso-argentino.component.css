@@ -85,6 +85,15 @@
     }
 }
 
+.green {
+    color: #3C7649;
+  }
+  .red {
+    color: #DD4B4B
+  }
+  .blue {
+    color: #3684CB
+  }
 @media (max-width: 600px) {
     .headerPeso {
         font-size: 25px;
