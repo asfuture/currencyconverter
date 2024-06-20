@@ -4,7 +4,7 @@ import { HttpClient, } from '@angular/common/http';
 
 import { CotacaoSimplificada } from '../../model/cotacao';
 import { Router } from '@angular/router';
-import { LibraEsterlinaService } from '../../service/libra-esterlina.service';
+import { CambioServiceService } from '../../service/cambio-service.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -21,7 +21,7 @@ export class LibraEsterlinaComponent implements OnInit, OnDestroy {
   private unsubscribe = new Subject<void>();
 
   constructor( 
-    private libraEsterlinaService:LibraEsterlinaService,
+    private cambioServiceService:CambioServiceService,
     private route:Router
   ) {}
   ngOnInit(): void {
@@ -29,13 +29,13 @@ export class LibraEsterlinaComponent implements OnInit, OnDestroy {
 
       setInterval(() => {
         this.getValor();
-        this.route.navigateByUrl('');
+        //this.route.navigateByUrl('');
         console.log('Chamando a função getvalor a cada 3 minutos')
       }, 180000) 
   }
 
   getValor() {
-    this.libraEsterlinaService.getLibraEsterlina().pipe(
+    this.cambioServiceService.getLibraEsterlina().pipe(
       takeUntil(this.unsubscribe)
     ).subscribe({
         next: (response: CotacaoSimplificada) => {
