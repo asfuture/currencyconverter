@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, } from '@angular/common/http';
 
 import { CotacaoSimplificada } from '../../model/cotacao';
+import { Router } from '@angular/router';
 import { PesoArgentinoService } from '../../service/peso-argentino.service';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -19,12 +20,16 @@ export class PesoArgentinoComponent implements OnInit, OnDestroy {
 
   private unsubscribe = new Subject<void>();
   
-    constructor( private pesoArgentinoService:PesoArgentinoService) {}
+    constructor(
+      private pesoArgentinoService:PesoArgentinoService,
+      private route:Router  
+    ) {}
     ngOnInit(): void {
         this.getValor()
   
         setInterval(() => {
           this.getValor();
+          this.route.navigateByUrl('');
           console.log('Chamando a função getvalor a cada 3 minutos')
         }, 180000) // 3 minutos
     }
