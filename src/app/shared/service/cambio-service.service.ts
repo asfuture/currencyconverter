@@ -36,7 +36,7 @@ export class CambioServiceService {
       return {
                 ask: dolar.ask,
                 pctChange: dolar.pctChange,
-                timestamp: dolar.timestamp
+                create_date: dolar.create_date
           };
        })
     );
@@ -50,7 +50,7 @@ export class CambioServiceService {
       return {
                 ask: libra.ask,
                 pctChange: libra.pctChange,
-                timestamp: libra.timestamp
+                create_date:libra.create_date
           };
        })
     );
@@ -64,7 +64,7 @@ export class CambioServiceService {
       return {
                 ask: peso.ask,
                 pctChange: peso.pctChange,
-                timestamp: peso.timestamp
+                create_date:peso.create_date
           };
        })
     );

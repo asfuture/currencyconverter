@@ -44,7 +44,7 @@ export class LibraEsterlinaComponent implements OnInit, OnDestroy {
       const initialValue: CotacaoSimplificada = {
         ask: '',
         pctChange: '',
-        timestamp: ''
+        create_date: ''
       };
       localStorage.setItem('libraEsterlina', JSON.stringify(initialValue));
     }
@@ -59,9 +59,8 @@ export class LibraEsterlinaComponent implements OnInit, OnDestroy {
       takeUntil(this.unsubscribe)
     ).subscribe({
         next: (response: CotacaoSimplificada) => {
-          //console.log(response);
           this.valorLibra = [response];
-          //console.log('teste', this.valorLibra)
+          //console.log( this.valorLibra)
           localStorage.setItem(this.localStorageKey, JSON.stringify(response));
         },
         error:(error) => {
@@ -90,9 +89,9 @@ export class LibraEsterlinaComponent implements OnInit, OnDestroy {
       console.log('O componente está sendo destruído!')
     }
     }
-   
-     formatTimestamp(timestamp: string): string {
-       const date = new Date(parseInt(timestamp, 10) * 1000);
-       return date.toLocaleTimeString('pt-BR');
-     }
+    
+     formatHora(create_date: string): string {
+      const [date, time] = create_date.split(' ');
+      return time;
+    }
 }

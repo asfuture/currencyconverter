@@ -15,5 +15,5 @@ export interface Cotacao {
 export interface CotacaoSimplificada {
     ask: string;
     pctChange: string;
-    timestamp: string;
+    create_date:string;
 }

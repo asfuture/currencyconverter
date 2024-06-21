@@ -45,7 +45,7 @@ export class PesoArgentinoComponent implements OnInit, OnDestroy {
         const initialValue: CotacaoSimplificada = {
           ask: '',
           pctChange: '',
-          timestamp: ''
+          create_date: ''
         };
         localStorage.setItem('pesoArgentino', JSON.stringify(initialValue));
       }
@@ -60,9 +60,8 @@ export class PesoArgentinoComponent implements OnInit, OnDestroy {
         takeUntil(this.unsubscribe)
       ).subscribe({
           next: (response: CotacaoSimplificada) => {
-            //console.log(response);
             this.valorPeso = [response];
-            //console.log('teste', this.valorPeso)
+            //console.log(this.valorPeso)
             localStorage.setItem(this.localStorageKey, JSON.stringify(response));
           },
           error:(error) => {
@@ -90,9 +89,9 @@ export class PesoArgentinoComponent implements OnInit, OnDestroy {
         this.subscription.unsubscribe();
       }
       }
-     
-       formatTimestamp(timestamp: string): string {
-         const date = new Date(parseInt(timestamp, 10) * 1000);
-         return date.toLocaleTimeString('pt-BR');
-       }
+      
+       formatHora(create_date: string): string {
+        const [date, time] = create_date.split(' ');
+        return time;
+      }
 }

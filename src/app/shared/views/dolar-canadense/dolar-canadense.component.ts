@@ -45,7 +45,7 @@ export class DolarCanadenseComponent implements OnInit, OnDestroy {
       const initialValue: CotacaoSimplificada = {
         ask: '',
         pctChange: '',
-        timestamp: ''
+        create_date: ''
       };
       localStorage.setItem('dolarCanadense', JSON.stringify(initialValue));
     }
@@ -61,6 +61,7 @@ export class DolarCanadenseComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response: CotacaoSimplificada) => {
         this.valorDolar = [response];
+        //console.log(this.valorDolar)
         localStorage.setItem('dolarCanadense', JSON.stringify(response)); // Atualiza o localStorage com os novos dados
       },
       error: (error) => {
@@ -88,9 +89,8 @@ export class DolarCanadenseComponent implements OnInit, OnDestroy {
       this.subscription.unsubscribe();
     }
   }
-
-  formatTimestamp(timestamp: string): string {
-    const date = new Date(parseInt(timestamp, 10) * 1000);
-    return date.toLocaleTimeString('pt-BR');
+  formatHora(create_date: string): string {
+    const [date, time] = create_date.split(' ');
+    return time;
   }
 }
