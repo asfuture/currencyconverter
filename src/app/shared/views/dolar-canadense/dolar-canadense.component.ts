@@ -31,7 +31,6 @@ export class DolarCanadenseComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.setupLocalStorage(); // Verifica e cria a chave no localStorage, se necessário
     this.getValor(); // Inicia o processo de obtenção dos valores
-
     setInterval(() => {
       this.setupLocalStorage();
       this.getValor();
