@@ -5,7 +5,7 @@ import { HttpClient, } from '@angular/common/http';
 import { CotacaoSimplificada } from '../../model/cotacao';
 import { CambioServiceService } from '../../service/cambio-service.service';
 import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 
 @Component({
@@ -17,44 +17,64 @@ import { Subject, takeUntil } from 'rxjs';
   providers:[HttpClient]
 })
 export class DolarCanadenseComponent implements OnInit, OnDestroy {
-valorDolar: CotacaoSimplificada[] = [];
+  valorDolar: CotacaoSimplificada[] = [];
 
-private unsubscribe = new Subject<void>();
+  private unsubscribe = new Subject<void>();
+  private subscription!: Subscription;
+  private localStorageKey = 'dolarCanadense';
 
-  constructor( 
-    private cambioServiceService:CambioServiceService,
-    private route:Router
-    ) {}
+  constructor(
+    private cambioServiceService: CambioServiceService,
+    private route: Router
+  ) { }
+
   ngOnInit(): void {
-      this.getValor()
+    this.setupLocalStorage(); // Verifica e cria a chave no localStorage, se necessário
+    this.getValor(); // Inicia o processo de obtenção dos valores
 
-      setInterval(() => {
-        this.getValor();
-        //this.route.navigateByUrl('');
-        console.log('Chamando a função getvalor a cada 3 minutos')
-      }, 180000)//180000
+    setInterval(() => {
+      this.setupLocalStorage();
+      this.getValor();
+      console.log('Chamando a função getValor a cada 3 minutos');
+    }, 180000); // 180000 ms = 3 minutos
   }
 
-  getValor() {
-    this.cambioServiceService.getDolarCanadense().pipe(
+  private setupLocalStorage(): void {
+    console.log('verificar localStorage');
+    const cachedData = localStorage.getItem(this.localStorageKey);
+    if (!cachedData) {
+      const initialValue: CotacaoSimplificada = {
+        ask: '',
+        pctChange: '',
+        timestamp: ''
+      };
+      localStorage.setItem('dolarCanadense', JSON.stringify(initialValue));
+    }
+  }
+
+  getValor(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
+    this.subscription = this.cambioServiceService.getDolarCanadense().pipe(
       takeUntil(this.unsubscribe)
     ).subscribe({
-        next: (response: CotacaoSimplificada) => {
-          //console.log(response);
-          this.valorDolar = [response];
-          //console.log('teste', this.valorDolar)
-        },
-        error:(error) => {
-          console.log("Erro ao fezer requisição dos valores ", error)
-        }
-      })
+      next: (response: CotacaoSimplificada) => {
+        this.valorDolar = [response];
+        localStorage.setItem('dolarCanadense', JSON.stringify(response)); // Atualiza o localStorage com os novos dados
+      },
+      error: (error) => {
+        console.log("Erro ao fazer requisição dos valores ", error);
+      }
+    });
   }
 
-  bidClass(bid:string):string {
-    const bidValor = parseFloat(bid.replace(',','.'));
-    if(bidValor <= 1.0) {
+  bidClass(bid: string): string {
+    const bidValor = parseFloat(bid.replace(',', '.'));
+    if (bidValor <= 1.0) {
       return 'red';
-    } else if (bidValor > 1.00 && bidValor <= 5.00){
+    } else if (bidValor > 1.0 && bidValor <= 5.0) {
       return 'green';
     } else {
       return 'blue';
@@ -62,13 +82,16 @@ private unsubscribe = new Subject<void>();
   }
 
   ngOnDestroy(): void {
-    console.log('O componente está sendo destruído!')
-     this.unsubscribe.next();
-     this.unsubscribe.complete();
+    console.log('O componente está sendo destruído!');
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
-   
-     formatTimestamp(timestamp: string): string {
-       const date = new Date(parseInt(timestamp, 10) * 1000);
-       return date.toLocaleTimeString('pt-BR');
-     }
+  }
+
+  formatTimestamp(timestamp: string): string {
+    const date = new Date(parseInt(timestamp, 10) * 1000);
+    return date.toLocaleTimeString('pt-BR');
+  }
 }

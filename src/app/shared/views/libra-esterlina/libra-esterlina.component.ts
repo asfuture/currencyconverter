@@ -5,7 +5,7 @@ import { HttpClient, } from '@angular/common/http';
 import { CotacaoSimplificada } from '../../model/cotacao';
 import { Router } from '@angular/router';
 import { CambioServiceService } from '../../service/cambio-service.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-libra-esterlina',
@@ -19,29 +19,50 @@ export class LibraEsterlinaComponent implements OnInit, OnDestroy {
   valorLibra: CotacaoSimplificada[] = [];
 
   private unsubscribe = new Subject<void>();
-
+  private subscription!:Subscription;
+  private localStorageKey = 'libraEsterlina';
   constructor( 
     private cambioServiceService:CambioServiceService,
     private route:Router
   ) {}
   ngOnInit(): void {
+    this.setupLocalStorage();
       this.getValor()
 
       setInterval(() => {
+        this.setupLocalStorage()
         this.getValor();
         //this.route.navigateByUrl('');
         console.log('Chamando a função getvalor a cada 3 minutos')
       }, 180000) 
   }
 
+  private setupLocalStorage(): void {
+    console.log('verificar localStorage');
+    const cachedData = localStorage.getItem(this.localStorageKey);
+    if (!cachedData) {
+      const initialValue: CotacaoSimplificada = {
+        ask: '',
+        pctChange: '',
+        timestamp: ''
+      };
+      localStorage.setItem('libraEsterlina', JSON.stringify(initialValue));
+    }
+  }
+
   getValor() {
-    this.cambioServiceService.getLibraEsterlina().pipe(
+    if(this.subscription){
+      this.subscription.unsubscribe();
+    }
+
+    this.subscription = this.cambioServiceService.getLibraEsterlina().pipe(
       takeUntil(this.unsubscribe)
     ).subscribe({
         next: (response: CotacaoSimplificada) => {
           //console.log(response);
           this.valorLibra = [response];
           //console.log('teste', this.valorLibra)
+          localStorage.setItem(this.localStorageKey, JSON.stringify(response));
         },
         error:(error) => {
           console.log("Erro ao fezer requisição dos valores ", error)
@@ -64,6 +85,10 @@ export class LibraEsterlinaComponent implements OnInit, OnDestroy {
     console.log('O componente está sendo destruído!')
      this.unsubscribe.next();
      this.unsubscribe.complete();
+     if (this.subscription) {
+      this.subscription.unsubscribe();
+      console.log('O componente está sendo destruído!')
+    }
     }
    
      formatTimestamp(timestamp: string): string {

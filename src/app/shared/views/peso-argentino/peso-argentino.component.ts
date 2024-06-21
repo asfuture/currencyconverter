@@ -5,7 +5,7 @@ import { HttpClient, } from '@angular/common/http';
 import { CotacaoSimplificada } from '../../model/cotacao';
 import { Router } from '@angular/router';
 import { CambioServiceService } from '../../service/cambio-service.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-peso-argentino',
@@ -19,29 +19,51 @@ export class PesoArgentinoComponent implements OnInit, OnDestroy {
   valorPeso: CotacaoSimplificada[] = [];
 
   private unsubscribe = new Subject<void>();
-  
+  private subscription!:Subscription;
+  private localStorageKey = 'pesoArgentino';
+
     constructor(
       private cambioServiceService:CambioServiceService,
       private route:Router  
     ) {}
     ngOnInit(): void {
+      this.setupLocalStorage();
         this.getValor()
   
         setInterval(() => {
+          this.setupLocalStorage();
           this.getValor();
           //this.route.navigateByUrl('');
           console.log('Chamando a função getvalor a cada 3 minutos')
         }, 180000) // 3 minutos
     }
-
+      // valida
+    private setupLocalStorage(): void {
+      console.log('verificar localStorage');
+      const cachedData = localStorage.getItem(this.localStorageKey);
+        if (!cachedData) {
+        const initialValue: CotacaoSimplificada = {
+          ask: '',
+          pctChange: '',
+          timestamp: ''
+        };
+        localStorage.setItem('pesoArgentino', JSON.stringify(initialValue));
+      }
+    }
+    
     getValor() {
-      this.cambioServiceService.getPesoArgentino().pipe(
+      if(this.subscription){
+        this.subscription.unsubscribe();
+      }
+  
+      this.subscription = this.cambioServiceService.getPesoArgentino().pipe(
         takeUntil(this.unsubscribe)
       ).subscribe({
           next: (response: CotacaoSimplificada) => {
             //console.log(response);
             this.valorPeso = [response];
             //console.log('teste', this.valorPeso)
+            localStorage.setItem(this.localStorageKey, JSON.stringify(response));
           },
           error:(error) => {
             console.log("Erro ao fezer requisição dos valores ", error)
@@ -64,6 +86,9 @@ export class PesoArgentinoComponent implements OnInit, OnDestroy {
       console.log('O componente está sendo destruído!')
        this.unsubscribe.next();
        this.unsubscribe.complete();
+       if (this.subscription) {
+        this.subscription.unsubscribe();
+      }
       }
      
        formatTimestamp(timestamp: string): string {
