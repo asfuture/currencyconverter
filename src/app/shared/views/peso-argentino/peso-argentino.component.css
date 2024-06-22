@@ -6,6 +6,17 @@
     display: flex;
     justify-content: space-between;
 }
+.cardPesoCarregando {
+    width: 400px;
+    height: 340px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0px 0px 6px 2px #CCCCCC40;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+}
 .container {
     text-align: center;
     align-content: space-between;
@@ -68,7 +79,10 @@
     color: #717171;
     margin: 0px;
  }
-
+ svg {
+    position: relative;
+    bottom: 87px;
+}
  
 @media (max-width: 1024px) {
     .footerPeso {
