@@ -106,6 +106,9 @@
     .cardLibra {
         width: 300px;
     }
+    .cardLibraCarregando {
+        width: 300px;
+    }
 }
 @media (max-width: 600px) {
     .headerLibra {

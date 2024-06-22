@@ -97,6 +97,9 @@
     .cardDolar {
         width: 300px;
     }
+    .cardDolarCarregando {
+        width: 300px;
+    }
     .headerDolar {
         width: 300px;
     }
@@ -106,12 +109,14 @@
     .footerDolar {
         width: 300px;
     }
+  
 }
 @media (max-width: 600px) {
     .headerDolar {
         font-size: 25px;
         height: 85px;
     }
+    
     .bodyDolar {
         font-size: 45px;
     }

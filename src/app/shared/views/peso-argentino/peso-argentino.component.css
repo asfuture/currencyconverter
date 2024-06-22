@@ -97,6 +97,9 @@
     .cardPeso {
         width: 300px;
     }
+    .cardPesoCarregando {
+        width: 300px;
+    }
 }
 
 .green {
