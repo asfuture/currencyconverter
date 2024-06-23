@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, } from '@angular/common/http';
 import { CotacaoSimplificada } from '../../model/cotacao';
-import { CambioServiceService } from '../../service/cambio-service.service';
+import { CambioService } from '../../service/cambio.service';
 import { Router } from '@angular/router';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 
@@ -15,78 +15,81 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
   providers:[HttpClient]
 })
 export class DolarCanadenseComponent implements OnInit, OnDestroy {
-  valorDolar: CotacaoSimplificada[] = []; // Armazena os valores do dólar canadense
-  loading: boolean = true;
-  erro: boolean = false; 
-  
-  private unsubscribe = new Subject<void>();
-  private subscription!: Subscription; // Ajuste para tornar opcional
-  private localStorageKey = 'dolarCanadense'; // Tornar constante readonly
+  cotacaoDolarCanadense: CotacaoSimplificada[] = []; 
+
+  isLoading = true; 
+  hasError = false; 
+
+  private destroy$ = new Subject<void>(); 
+  private cotacaoSubscription?: Subscription; 
+  private readonly storageKey = 'dolarCanadense'; 
 
   constructor(
-    private cambioServiceService: CambioServiceService,
-    private route: Router
-  ) { }
+    private cambioService: CambioService,
+    private router: Router 
+  ) {}
 
   ngOnInit(): void {
-    this.setupLocalStorage(); // Verifica e cria a chave no localStorage, se necessário
-    this.getValor(); // Inicia o processo de obtenção dos valores
-    setInterval( () => {
-      this.setupLocalStorage();
-      this.getValor();
-      console.log('Chamando a função getValor a cada 3 minutos');
-    }, 180_000); // 180_000 ms = 3 minutos
+    this.inicializaLocalStorage();
+    this.getCotacao();
+
+    // Chamando a função a cada 3 minutos (180000 ms)
+    setInterval(() => {
+      this.inicializaLocalStorage();
+      this.getCotacao();
+      //console.log('Atualizando cotação a cada 3 minutos');
+    }, 180000);
   }
 
-  recarregarComponent():void {
-    this.setupLocalStorage();
-    this.getValor();
-    console.log('Recarregar novamente');
-    this.route.navigateByUrl('/').then(() =>{
-      console.log('Navegação ok');
-    })
+  // Função para recarregar o componente
+  recarregarComponent(): void {
+    this.inicializaLocalStorage();
+    this.getCotacao();
+    console.log('Recarregando componente');
+    this.router.navigateByUrl('/').then(() => {
+      console.log('Navegação concluída');
+    });
   }
-    
-  private setupLocalStorage(): void {
-    console.log('verificar localStorage');
-    const cachedData = localStorage.getItem(this.localStorageKey);
+
+  // Inicializa o localStorage com um valor padrão, se necessário
+  private inicializaLocalStorage(): void {
+    //console.log('Verificando localStorage');
+    const cachedData = localStorage.getItem(this.storageKey);
     if (!cachedData) {
-      const initialValue: CotacaoSimplificada = {
+      const defaultValue: CotacaoSimplificada = {
         ask: '',
         pctChange: '',
         create_date: ''
       };
-      localStorage.setItem('dolarCanadense', JSON.stringify(initialValue));
+      localStorage.setItem(this.storageKey, JSON.stringify(defaultValue));
     }
   }
 
-  private getValor(): void {
-    // Cancela qualquer assinatura anterior
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-    // Realizar nova requisição
-    this.subscription = this.cambioServiceService.getDolarCanadense().pipe(
-      takeUntil(this.unsubscribe)
+  // Obtém a cotação do serviço
+  getCotacao(): void {
+    this.cotacaoSubscription?.unsubscribe();
+
+    this.cotacaoSubscription = this.cambioService.getDolarCanadense().pipe(
+      takeUntil(this.destroy$)
     ).subscribe({
-      next: (response: CotacaoSimplificada) => {
-        this.valorDolar = [response];
-        // Atualiza o localStorage com os novos dados
-        localStorage.setItem('dolarCanadense', JSON.stringify(response)); // Usar a constante
+      next: (cotacao: CotacaoSimplificada) => {
+        this.cotacaoDolarCanadense = [cotacao];
+        localStorage.setItem(this.storageKey, JSON.stringify(cotacao));
       },
       error: (error) => {
-        this.loading = false;
-        this.erro   = true;
-        console.log("Erro ao fazer requisição dos valores ", error);
+        this.isLoading = false;
+        this.hasError = true;
+        console.error("Erro ao obter cotação", error);
       }
     });
   }
 
-  bidClass(bid: string): string {
-    const bidValor = parseFloat(bid.replace(',', '.'));
-    if (bidValor <= 1.0) {
+  // Determina a classe CSS baseada no valor do bid
+  getBidClass(bid: string): string {
+    const bidValue = parseFloat(bid.replace(',', '.'));
+    if (bidValue <= 1.0) {
       return 'red';
-    } else if (bidValor > 1.0 && bidValor <= 5.0) { // Removido bidValor > 1.0, pois já é coberto pelo primeiro if
+    } else if (bidValue > 1.0 && bidValue <= 5.0) {
       return 'green';
     } else {
       return 'blue';
@@ -94,18 +97,15 @@ export class DolarCanadenseComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribe.next(); // Emite valor para cancelar assinaturas
-    this.unsubscribe.complete();// Completa o subject para liberar recursos
-
-    // Cancela assinatura ativa, se houver
-    if (this.subscription) { 
-      this.subscription.unsubscribe();
-    }
+    //console.log('Destruindo componente');
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.cotacaoSubscription?.unsubscribe();
   }
 
-  // Extrai o horário do tempo da string de data
-  formatHora(create_date: string): string {
-    const [date, time] = create_date.split(' '); 
+  // Formata a hora a partir da data de criação
+  formatTime(createDate: string): string {
+    const [, time] = createDate.split(' ');
     return time;
   }
 }

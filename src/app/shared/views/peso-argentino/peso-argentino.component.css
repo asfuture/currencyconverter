@@ -1,4 +1,5 @@
-.cardPeso {
+/* Estilos para o card de dados quando os dados estão carregados */
+.dataCard {
     width: 400px;
     border-radius: 10px;
     background: #fff;
@@ -6,7 +7,9 @@
     display: flex;
     justify-content: space-between;
 }
-.cardPesoCarregando {
+
+/* Estilos para o card de carregamento */
+.loadingCard {
     width: 400px;
     height: 340px;
     border-radius: 10px;
@@ -17,17 +20,21 @@
     flex-direction: column;
     align-items: center;
 }
-.cardPesoCarregandoErro{
+
+/* Ajustes para o card quando há um erro */
+.errorCard {
     justify-content: flex-start;
 }
-.errorApi{
+
+/* Estilos para a mensagem de erro */
+.errorContainerApi {
     font-size: 26px;
     font-weight: 400;
     line-height: 39px;
     text-align: center;
     color: #717171;
 }
-.errorApi button{
+.errorContainerApi button {
     width: 173px;
     height: 58px;
     font-size: 18px;
@@ -39,6 +46,8 @@
     border-radius: 5px;
     cursor: pointer;
 }
+
+/* Estilos gerais para o container */
 .container {
     text-align: center;
     align-content: space-between;
@@ -46,7 +55,9 @@
     flex-wrap: wrap;
     flex-direction: column;
 }
-.headerPeso {
+
+/* Estilos para o cabeçalho do card */
+.cardHeader {
     width: 400px;
     height: 119px;
     border-radius: 10px 10px 0px 0px;
@@ -57,7 +68,9 @@
     line-height: 45px;
     text-align: center;
 }
- .bodyPeso {
+
+/* Estilos para o corpo do card */
+ .cardBody {
     width: 400px;
     height: 130px;
     align-content: center;
@@ -67,7 +80,9 @@
     text-align: center;
     color: #DD4B4B;
  }
-.footerPeso {
+
+ /* Estilos para o rodapé do card */
+.cardFooter {
     width: 400px;
     height: 90px;
     border-top: 0.5px  solid #ccc;
@@ -76,6 +91,8 @@
     display: flex;
     justify-content: space-around;
 }
+
+/* Estilos para o texto de variação */
 .texto1, .texto2 {
     width: 100%;
     align-content:center ;
@@ -83,6 +100,8 @@
 .texto1{
     border-right: 0.5px  solid #ccc;
 }
+
+/* Estilos para os rótulos de variação e atualização */
 .variacao, .textoAtualiza {
     font-size: 18px;
     font-weight: 600;
@@ -91,6 +110,8 @@
     color: #919191;
     margin: 0px;
  }
+
+ /* Estilos para os valores de variação e atualização */
  .variacaoValor, .time {
     font-size: 24px;
     font-weight: 600;
@@ -99,6 +120,8 @@
     color: #717171;
     margin: 0px;
  }
+
+ /* Estilos para cores baseadas em valores */
  .green {
     color: #3C7649;
   }
@@ -108,39 +131,30 @@
   .blue {
     color: #3684CB
   }
+
+  /* Ajuste para o SVG de carregamento */
  svg {
     position: relative;
     bottom: 87px;
 }
  
+/* Ajustes responsivos para telas médias */
 @media (max-width: 1024px) {
-    .footerPeso {
-        width: 300px;
-    }
-    .bodyPeso {
-        width: 300px;
-    }
-    .headerPeso {
-        width: 300px;
-    }
-    .cardPeso {
-        width: 300px;
-    }
-    .cardPesoCarregando {
+    .cardFooter, .cardBody, .cardHeader, .dataCard, .loadingCard {
         width: 300px;
     }
 }
 
-
+/* Ajustes responsivos e Mobile */
 @media (max-width: 600px) {
-    .headerPeso {
+    .cardHeader {
         font-size: 25px;
         height: 85px;
     }
-    .errorApi {
+    .errorContainerApi {
         margin-top: 20px;
     }
-    .bodyPeso {
+    .cardBody {
         font-size: 45px;
     }
     .variacao, .textoAtualiza {

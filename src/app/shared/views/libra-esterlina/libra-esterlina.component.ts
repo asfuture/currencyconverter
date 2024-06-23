@@ -4,7 +4,7 @@ import { HttpClient, } from '@angular/common/http';
 
 import { CotacaoSimplificada } from '../../model/cotacao';
 import { Router } from '@angular/router';
-import { CambioServiceService } from '../../service/cambio-service.service';
+import { CambioService } from '../../service/cambio.service';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
@@ -15,77 +15,83 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
   styleUrl: './libra-esterlina.component.css',
   providers:[HttpClient]
 })
+
 export class LibraEsterlinaComponent implements OnInit, OnDestroy {
-  valorLibra: CotacaoSimplificada[] = [];
-  loading: boolean = true;
-  erro: boolean = false;
+cotacaoLibraEsterlina: CotacaoSimplificada[] = []; 
 
-  private unsubscribe = new Subject<void>();
-  private subscription!:Subscription;
-  private localStorageKey = 'libraEsterlina';
-  constructor( 
-    private cambioServiceService:CambioServiceService,
-    private route:Router
+  isLoading = true; 
+  hasError = false; 
+
+  private destroy$ = new Subject<void>(); 
+  private cotacaoSubscription?: Subscription; 
+  private readonly storageKey = 'libraEsterlina'; 
+
+  constructor(
+    private cambioService: CambioService,
+    private router: Router 
   ) {}
+
   ngOnInit(): void {
-    this.setupLocalStorage();
-      this.getValor()
+    this.inicializaLocalStorage();
+    this.getCotacao();
 
-      setInterval(() => {
-        this.setupLocalStorage()
-        this.getValor();
-        //this.route.navigateByUrl('');
-        console.log('Chamando a função getvalor a cada 3 minutos')
-      }, 180000) 
+    // Chamando a função a cada 3 minutos (180000 ms)
+    setInterval(() => {
+      this.inicializaLocalStorage();
+      this.getCotacao();
+      //console.log('Atualizando cotação a cada 3 minutos');
+    }, 180000);
   }
-  recarregarComponent() {
-        this.setupLocalStorage();
-        this.getValor();
-        console.log('Recarregar novamente');
-        this.route.navigateByUrl('/').then(() =>{
-          console.log('Navegação ok');
-        })
-      }
 
-  private setupLocalStorage(): void {
-    console.log('verificar localStorage');
-    const cachedData = localStorage.getItem(this.localStorageKey);
+  // Função para recarregar o componente
+  recarregarComponent(): void {
+    this.inicializaLocalStorage();
+    this.getCotacao();
+    console.log('Recarregando componente');
+    this.router.navigateByUrl('/').then(() => {
+      console.log('Navegação concluída');
+    });
+  }
+
+  // Inicializa o localStorage com um valor padrão, se necessário
+  private inicializaLocalStorage(): void {
+    //console.log('Verificando localStorage');
+    const cachedData = localStorage.getItem(this.storageKey);
     if (!cachedData) {
-      const initialValue: CotacaoSimplificada = {
+      const defaultValue: CotacaoSimplificada = {
         ask: '',
         pctChange: '',
         create_date: ''
       };
-      localStorage.setItem('libraEsterlina', JSON.stringify(initialValue));
+      localStorage.setItem(this.storageKey, JSON.stringify(defaultValue));
     }
   }
 
-  getValor() {
-    if(this.subscription){
-      this.subscription.unsubscribe();
-    }
+  // Obtém a cotação do serviço
+  getCotacao(): void {
+    this.cotacaoSubscription?.unsubscribe();
 
-    this.subscription = this.cambioServiceService.getLibraEsterlina().pipe(
-      takeUntil(this.unsubscribe)
+    this.cotacaoSubscription = this.cambioService.getLibraEsterlina().pipe(
+      takeUntil(this.destroy$)
     ).subscribe({
-        next: (response: CotacaoSimplificada) => {
-          this.valorLibra = [response];
-          //console.log( this.valorLibra)
-          localStorage.setItem(this.localStorageKey, JSON.stringify(response));
-        },
-        error:(error) => {
-          this.loading = false;
-          this.erro   = true;
-          console.log("Erro ao fezer requisição dos valores ", error)
-        }
-      })
+      next: (cotacao: CotacaoSimplificada) => {
+        this.cotacaoLibraEsterlina = [cotacao];
+        localStorage.setItem(this.storageKey, JSON.stringify(cotacao));
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.hasError = true;
+        console.error("Erro ao obter cotação", error);
+      }
+    });
   }
 
-  bidClass(bid:string):string {
-    const bidValor = parseFloat(bid.replace(',','.'));
-    if(bidValor <= 1.0) {
+  // Determina a classe CSS baseada no valor do bid
+  getBidClass(bid: string): string {
+    const bidValue = parseFloat(bid.replace(',', '.'));
+    if (bidValue <= 1.0) {
       return 'red';
-    } else if (bidValor > 1.00 && bidValor <= 5.00){
+    } else if (bidValue > 1.0 && bidValue <= 5.0) {
       return 'green';
     } else {
       return 'blue';
@@ -93,17 +99,15 @@ export class LibraEsterlinaComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('O componente está sendo destruído!')
-     this.unsubscribe.next();
-     this.unsubscribe.complete();
-     if (this.subscription) {
-      this.subscription.unsubscribe();
-      console.log('O componente está sendo destruído!')
-    }
-    }
-    
-     formatHora(create_date: string): string {
-      const [date, time] = create_date.split(' ');
-      return time;
-    }
+    //console.log('Destruindo componente');
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.cotacaoSubscription?.unsubscribe();
+  }
+
+  // Formata a hora a partir da data de criação
+  formatTime(createDate: string): string {
+    const [, time] = createDate.split(' ');
+    return time;
+  }
 }

@@ -1,36 +1,37 @@
 <section [ngClass]="{
-    'cardLibraCarregandoErro': erro, 
-    'cardLibraCarregando': valorLibra.length === 0,
-    'cardLibra': valorLibra.length > 0
+    'errorCard': hasError, 
+    'loadingCard': cotacaoLibraEsterlina.length === 0,
+    'dataCard': cotacaoLibraEsterlina.length > 0
   }">
-    <div class="container" *ngIf="valorLibra && valorLibra.length; else loading">
-        <div class="headerLibra">
+    <div class="container" *ngIf="cotacaoLibraEsterlina && cotacaoLibraEsterlina.length; else loading">
+        <div class="cardHeader">
             <p>Libra Esterlina</p>
         </div>
-        <div class="bodyLibra">
-            <span [ngClass]="bidClass(valorLibra[0].ask)">{{ valorLibra[0].ask | currency: 'BRL':  'symbol' : '1.2-2' }}</span>
+        <div class="cardBody">
+            <span [ngClass]="getBidClass(cotacaoLibraEsterlina[0].ask)">{{ cotacaoLibraEsterlina[0].ask | currency: 'BRL':  'symbol' : '1.2-2' }}</span>
         </div>
-        <div class="footerLibra">
+        <div class="cardFooter">
             <div class="texto1">
                 <p class="variacao">Variação (%)</p>
-                <p class="variacaoValor">{{valorLibra[0].pctChange}}</p>
+                <p class="variacaoValor">{{ cotacaoLibraEsterlina[0].pctChange }}</p>
             </div>
             <div class="texto2">
                 <p class="textoAtualiza">Atualizado</p>
-                <p class="time">{{  valorLibra[0] ? formatHora(valorLibra[0].create_date) : '' }}</p>
+                <p class="time">{{  cotacaoLibraEsterlina[0] ? formatTime(cotacaoLibraEsterlina[0].create_date) : '' }}</p>
             </div>
         </div>
+        
     </div>
     <ng-template #loading >
-        <div class="headerLibra">
+        <div class="cardHeader">
             <p>Libra Esterlina</p>
         </div>
-        <div *ngIf="loading && !erro " >
+        <div *ngIf="loading && !hasError " >
             <svg width='150px' height='100px' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-ring-alt"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0)" fill="none" stroke-width="10" stroke-linecap="round"></circle><circle cx="50" cy="50" r="40" stroke="#737c84" fill="none" stroke-width="6" stroke-linecap="round"><animate attributeName="stroke-dashoffset" dur="1.5s" repeatCount="indefinite" from="0" to="502"></animate><animate attributeName="stroke-dasharray" dur="1.5s" repeatCount="indefinite" values="188.25 62.75;1 250;188.25 62.75"></animate></circle></svg>
         </div>
         
     
-        <div class="errorApi" *ngIf="erro" >
+        <div class="errorContainerApi" *ngIf="hasError" >
             <p>Algo deu errado</p>
             <button (click)="recarregarComponent()">RECARREGAR</button>
           </div>

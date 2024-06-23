@@ -1,5 +1,5 @@
-/* Estilos para o cartão do dólar */
-.cardDolar {
+/* Estilos para o card de dados quando os dados estão carregados */
+.dataCard {
     width: 400px;
     border-radius: 10px;
     background: #fff;
@@ -8,7 +8,8 @@
     justify-content: space-between;
 }
 
-.cardDolarCarregando {
+/* Estilos para o card de carregamento */
+.loadingCard {
     width: 400px;
     height: 340px;
     border-radius: 10px;
@@ -20,20 +21,20 @@
     align-items: center;
 }
 
-.cardDolarCarregandoErro{
+/* Ajustes para o card quando há um erro */
+.errorCard {
     justify-content: flex-start;
 }
 
-/* Estilos para mensagem de erro da API */
-.errorApi{
+/* Estilos para a mensagem de erro */
+.errorContainerApi {
     font-size: 26px;
     font-weight: 400;
     line-height: 39px;
     text-align: center;
     color: #717171;
 }
-
-.errorApi button{
+.errorContainerApi button {
     width: 173px;
     height: 58px;
     font-size: 18px;
@@ -46,7 +47,7 @@
     cursor: pointer;
 }
 
-/* Container geral */
+/* Estilos gerais para o container */
 .container {
     text-align: center;
     align-content: space-between;
@@ -55,11 +56,11 @@
     flex-direction: column;
 }
 
-/* Cabeçalho do cartão do dólar */
-.headerDolar {
+/* Estilos para o cabeçalho do card */
+.cardHeader {
     width: 400px;
     height: 119px;
-    border-radius: 10px 10px 0 0;
+    border-radius: 10px 10px 0px 0px;
     background: #F6F6F6;
     color: #717171;
     font-size: 30px;
@@ -68,8 +69,8 @@
     text-align: center;
 }
 
- /* Corpo do card do dólar */
- .bodyDolar {
+/* Estilos para o corpo do card */
+ .cardBody {
     width: 400px;
     height: 130px;
     align-content: center;
@@ -77,11 +78,11 @@
     font-weight: 500;
     line-height: 96px;
     text-align: center;
-    color: #3C7649;
+    color: #DD4B4B;
  }
 
- /* Rodapé do card do dólar */
-.footerDolar {
+ /* Estilos para o rodapé do card */
+.cardFooter {
     width: 400px;
     height: 90px;
     border-top: 0.5px  solid #ccc;
@@ -91,17 +92,17 @@
     justify-content: space-around;
 }
 
-/* Texto do rodapé */
+/* Estilos para o texto de variação */
 .texto1, .texto2 {
     width: 100%;
     align-content:center ;
 }
-
 .texto1{
     border-right: 0.5px  solid #ccc;
 }
 
- .variacao, .textoAtualiza {
+/* Estilos para os rótulos de variação e atualização */
+.variacao, .textoAtualiza {
     font-size: 18px;
     font-weight: 600;
     line-height: 27px;
@@ -110,6 +111,7 @@
     margin: 0px;
  }
 
+ /* Estilos para os valores de variação e atualização */
  .variacaoValor, .time {
     font-size: 24px;
     font-weight: 600;
@@ -119,7 +121,7 @@
     margin: 0px;
  }
 
- /* Cores específicas para os valores */
+ /* Estilos para cores baseadas em valores */
  .green {
     color: #3C7649;
   }
@@ -129,29 +131,30 @@
   .blue {
     color: #3684CB
   }
-  svg{
-        position: relative;
-        bottom: 87px;
-  }
 
-  /* Media queries para dispositivos Desktop e Mobile */
+  /* Ajuste para o SVG de carregamento */
+ svg {
+    position: relative;
+    bottom: 87px;
+}
+ 
+/* Ajustes responsivos para telas médias */
 @media (max-width: 1024px) {
-    .cardDolar, .cardDolarCarregando, .headerDolar, .bodyDolar, .footerDolar {
+    .cardFooter, .cardBody, .cardHeader, .dataCard, .loadingCard {
         width: 300px;
     }
-  
 }
 
+/* Ajustes responsivos e Mobile */
 @media (max-width: 600px) {
-    .headerDolar {
+    .cardHeader {
         font-size: 25px;
         height: 85px;
     }
-    .errorApi {
+    .errorContainerApi {
         margin-top: 20px;
     }
-    
-    .bodyDolar {
+    .cardBody {
         font-size: 45px;
     }
     .variacao, .textoAtualiza {

@@ -1,110 +1,112 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 import { CotacaoSimplificada } from '../../model/cotacao';
-import { Router } from '@angular/router';
-import { CambioServiceService } from '../../service/cambio-service.service';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { CambioService } from '../../service/cambio.service';
 
 @Component({
   selector: 'app-peso-argentino',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './peso-argentino.component.html',
-  styleUrl: './peso-argentino.component.css',
-  providers:[HttpClient]
+  styleUrls: ['./peso-argentino.component.css'],
+  providers: [HttpClient]
 })
 export class PesoArgentinoComponent implements OnInit, OnDestroy {
-  valorPeso: CotacaoSimplificada[] = [];
-  loading: boolean = true;
-  erro: boolean = false;
+  cotacaoPesoArgentino: CotacaoSimplificada[] = []; 
 
-  private unsubscribe = new Subject<void>();
-  private subscription!:Subscription;
-  private localStorageKey = 'pesoArgentino';
+  isLoading = true; 
+  hasError = false; 
 
-    constructor(
-      private cambioServiceService:CambioServiceService,
-      private route:Router  
-    ) {}
-    ngOnInit(): void {
-      this.setupLocalStorage();
-        this.getValor()
-  
-        setInterval(() => {
-          this.setupLocalStorage();
-          this.getValor();
-          //this.route.navigateByUrl('');
-          console.log('Chamando a função getvalor a cada 3 minutos')
-        }, 180000) // 3 minutos
-    }
+  private destroy$ = new Subject<void>(); 
+  private cotacaoSubscription?: Subscription; 
+  private readonly storageKey = 'pesoArgentino'; 
 
-    recarregarComponent() {
-      this.setupLocalStorage();
-      this.getValor();
-      console.log('Recarregar novamente');
-      this.route.navigateByUrl('/').then(() =>{
-        console.log('Navegação ok');
-      })
+  constructor(
+    private cambioService: CambioService,
+    private router: Router 
+  ) {}
+
+  ngOnInit(): void {
+    this.inicializaLocalStorage();
+    this.getCotacao();
+
+    // Chamando a função a cada 3 minutos (180000 ms)
+    setInterval(() => {
+      this.inicializaLocalStorage();
+      this.getCotacao();
+      //console.log('Atualizando cotação a cada 3 minutos');
+    }, 180000);
+  }
+
+  // Função para recarregar o componente
+  recarregarComponent(): void {
+    this.inicializaLocalStorage();
+    this.getCotacao();
+    console.log('Recarregando componente');
+    this.router.navigateByUrl('/').then(() => {
+      console.log('Navegação concluída');
+    });
+  }
+
+  // Inicializa o localStorage com um valor padrão, se necessário
+  private inicializaLocalStorage(): void {
+    //console.log('Verificando localStorage');
+    const cachedData = localStorage.getItem(this.storageKey);
+    if (!cachedData) {
+      const defaultValue: CotacaoSimplificada = {
+        ask: '',
+        pctChange: '',
+        create_date: ''
+      };
+      localStorage.setItem(this.storageKey, JSON.stringify(defaultValue));
     }
-      // valida
-    private setupLocalStorage(): void {
-      console.log('verificar localStorage');
-      const cachedData = localStorage.getItem(this.localStorageKey);
-        if (!cachedData) {
-        const initialValue: CotacaoSimplificada = {
-          ask: '',
-          pctChange: '',
-          create_date: ''
-        };
-        localStorage.setItem('pesoArgentino', JSON.stringify(initialValue));
+  }
+
+  // Obtém a cotação do serviço
+  getCotacao(): void {
+    this.cotacaoSubscription?.unsubscribe();
+
+    this.cotacaoSubscription = this.cambioService.getPesoArgentino().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (cotacao: CotacaoSimplificada) => {
+        this.cotacaoPesoArgentino = [cotacao];
+        localStorage.setItem(this.storageKey, JSON.stringify(cotacao));
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.hasError = true;
+        console.error("Erro ao obter cotação", error);
       }
+    });
+  }
+
+  // Determina a classe CSS baseada no valor do bid
+  getBidClass(bid: string): string {
+    const bidValue = parseFloat(bid.replace(',', '.'));
+    if (bidValue <= 1.0) {
+      return 'red';
+    } else if (bidValue > 1.0 && bidValue <= 5.0) {
+      return 'green';
+    } else {
+      return 'blue';
     }
-    
-    getValor() {
-      if(this.subscription){
-        this.subscription.unsubscribe();
-      }
-  
-      this.subscription = this.cambioServiceService.getPesoArgentino().pipe(
-        takeUntil(this.unsubscribe)
-      ).subscribe({
-          next: (response: CotacaoSimplificada) => {
-            this.valorPeso = [response];
-            //console.log(this.valorPeso)
-            localStorage.setItem(this.localStorageKey, JSON.stringify(response));
-          },
-          error:(error) => {
-            this.loading = false;
-            this.erro   = true;
-            console.log("Erro ao fezer requisição dos valores ", error)
-          }
-        })
-    }
-  
-    bidClass(bid:string):string {
-      const bidValor = parseFloat(bid.replace(',','.'));
-      if(bidValor <= 1.0) {
-        return 'red';
-      } else if (bidValor > 1.00 && bidValor <= 5.00){
-        return 'green';
-      } else {
-        return 'blue';
-      }
-    }
-  
-    ngOnDestroy(): void {
-      console.log('O componente está sendo destruído!')
-       this.unsubscribe.next();
-       this.unsubscribe.complete();
-       if (this.subscription) {
-        this.subscription.unsubscribe();
-      }
-      }
-      
-       formatHora(create_date: string): string {
-        const [date, time] = create_date.split(' ');
-        return time;
-      }
+  }
+
+  ngOnDestroy(): void {
+    //console.log('Destruindo componente');
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.cotacaoSubscription?.unsubscribe();
+  }
+
+  // Formata a hora a partir da data de criação
+  formatTime(createDate: string): string {
+    const [, time] = createDate.split(' ');
+    return time;
+  }
 }

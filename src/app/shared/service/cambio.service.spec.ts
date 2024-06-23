@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CambioServiceService } from './cambio-service.service';
+import { CambioService } from './cambio.service';
 
-describe('CambioServiceService', () => {
-  let service: CambioServiceService;
+describe('CambioService', () => {
+  let service: CambioService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(CambioServiceService);
+    service = TestBed.inject(CambioService);
   });
 
   it('should be created', () => {

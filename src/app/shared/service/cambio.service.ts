@@ -10,7 +10,7 @@ import { Observable, map, timer, switchMap, catchError, EMPTY } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class CambioServiceService {
+export class CambioService {
 
   private readonly apiUrl:string = environment.apiUrl;
   private readonly intervaloAtualizacao:number = 175_000; // 2 minutos e 55 segundos 
@@ -19,10 +19,6 @@ export class CambioServiceService {
   constructor( private http: HttpClient ) {
     this.cotacoesObservavel$ = timer(0, this.intervaloAtualizacao).pipe(
       switchMap(() => this.buscarCotacoes()),
-      catchError(error => {
-        console.error('Erro ao buscar cotações:', error);
-        return EMPTY;
-      })
     );
    }
   
@@ -30,20 +26,12 @@ export class CambioServiceService {
    private buscarCotacoes(): Observable<{ CADBRL: Cotacao; GBPBRL: Cotacao; ARSBRL:Cotacao }> {
     const url = `${this.apiUrl}/CAD-BRL,GBP-BRL,ARS-BRL`;
     return this.http.get<{ CADBRL:Cotacao; GBPBRL:Cotacao; ARSBRL:Cotacao }>(url).pipe(
-      catchError(error => {
-        console.error('Erro ao buscar cotações:', error);
-        return EMPTY
-      })
     );
   }
 
   // Recupera as informações de taxa de câmbio atual para o Dólar Canadense (CAD).
   getDolarCanadense(): Observable<CotacaoSimplificada> {
     return this.cotacoesObservavel$.pipe(
-      catchError(error => {
-        console.error('Erro ao obter cotação do Dólar Canadense:', error);
-        return EMPTY;
-      }),
      map(response => {
       const dolar = response.CADBRL;
       return {
@@ -58,10 +46,6 @@ export class CambioServiceService {
   //Recupera as informações de taxa de câmbio atual para a Libra Esterlina (GBP).
   getLibraEsterlina(): Observable<CotacaoSimplificada> {
     return this.cotacoesObservavel$.pipe(
-      catchError(error => {
-        console.error('Erro ao obter cotação do Libra Esterlina:', error);
-        return EMPTY;
-      }),
      map(response => {
       const libra = response.GBPBRL;
       return {
