@@ -1,23 +1,23 @@
+/* Estilos para o elemento principal 'main' */
 main {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around; 
-    margin: 100px 30px 100px 30px;
-    gap: 40px;
+    justify-content: space-around;
+    margin: 100px 30px;
+    gap: 40px; 
 }
 
+/* Media query para telas menores que 1024px */
 @media (max-width: 1024px) {
-    main { 
-        margin: 100px 20px 100px 20px;
-        gap: 40px;
+    main {
+        margin: 100px 20px; 
     }
-
 }
+
+/* Media query para telas menores que 500px */
 @media (max-width: 500px) {
-    main { 
-        margin:20px;
-        gap: 40px;
+    main {
+        margin: 20px; 
+        padding-top: 70px; 
     }
-
 }
-
