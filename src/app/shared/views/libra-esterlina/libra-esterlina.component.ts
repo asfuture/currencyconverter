@@ -17,6 +17,8 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
 })
 export class LibraEsterlinaComponent implements OnInit, OnDestroy {
   valorLibra: CotacaoSimplificada[] = [];
+  loading: boolean = true;
+  erro: boolean = false;
 
   private unsubscribe = new Subject<void>();
   private subscription!:Subscription;
@@ -36,6 +38,14 @@ export class LibraEsterlinaComponent implements OnInit, OnDestroy {
         console.log('Chamando a função getvalor a cada 3 minutos')
       }, 180000) 
   }
+  recarregarComponent() {
+        this.setupLocalStorage();
+        this.getValor();
+        console.log('Recarregar novamente');
+        this.route.navigateByUrl('/').then(() =>{
+          console.log('Navegação ok');
+        })
+      }
 
   private setupLocalStorage(): void {
     console.log('verificar localStorage');
@@ -64,6 +74,8 @@ export class LibraEsterlinaComponent implements OnInit, OnDestroy {
           localStorage.setItem(this.localStorageKey, JSON.stringify(response));
         },
         error:(error) => {
+          this.loading = false;
+          this.erro   = true;
           console.log("Erro ao fezer requisição dos valores ", error)
         }
       })

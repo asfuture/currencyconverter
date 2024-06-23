@@ -9,6 +9,12 @@ svg {
     width: 265px;
     height: 44px;
 }
+@media (max-width: 800px) {
+    .container {
+        position: fixed;
+        top: 0px;
+    }
+}
 @media (max-width: 500px) {
     .container {
         position: fixed;

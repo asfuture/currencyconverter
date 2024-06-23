@@ -1,3 +1,4 @@
+/* Estilos para o cartão do dólar */
 .cardDolar {
     width: 400px;
     border-radius: 10px;
@@ -6,6 +7,7 @@
     display: flex;
     justify-content: space-between;
 }
+
 .cardDolarCarregando {
     width: 400px;
     height: 340px;
@@ -17,6 +19,34 @@
     flex-direction: column;
     align-items: center;
 }
+
+.cardDolarCarregandoErro{
+    justify-content: flex-start;
+}
+
+/* Estilos para mensagem de erro da API */
+.errorApi{
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 39px;
+    text-align: center;
+    color: #717171;
+}
+
+.errorApi button{
+    width: 173px;
+    height: 58px;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 27px;
+    background: #F4F4F4;
+    color: #717171;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Container geral */
 .container {
     text-align: center;
     align-content: space-between;
@@ -24,10 +54,12 @@
     flex-wrap: wrap;
     flex-direction: column;
 }
+
+/* Cabeçalho do cartão do dólar */
 .headerDolar {
     width: 400px;
     height: 119px;
-    border-radius: 10px 10px 0px 0px;
+    border-radius: 10px 10px 0 0;
     background: #F6F6F6;
     color: #717171;
     font-size: 30px;
@@ -35,7 +67,8 @@
     line-height: 45px;
     text-align: center;
 }
- 
+
+ /* Corpo do card do dólar */
  .bodyDolar {
     width: 400px;
     height: 130px;
@@ -46,6 +79,8 @@
     text-align: center;
     color: #3C7649;
  }
+
+ /* Rodapé do card do dólar */
 .footerDolar {
     width: 400px;
     height: 90px;
@@ -55,13 +90,17 @@
     display: flex;
     justify-content: space-around;
 }
+
+/* Texto do rodapé */
 .texto1, .texto2 {
     width: 100%;
     align-content:center ;
 }
+
 .texto1{
     border-right: 0.5px  solid #ccc;
 }
+
  .variacao, .textoAtualiza {
     font-size: 18px;
     font-weight: 600;
@@ -70,6 +109,7 @@
     color: #919191;
     margin: 0px;
  }
+
  .variacaoValor, .time {
     font-size: 24px;
     font-weight: 600;
@@ -79,6 +119,7 @@
     margin: 0px;
  }
 
+ /* Cores específicas para os valores */
  .green {
     color: #3C7649;
   }
@@ -93,28 +134,21 @@
         bottom: 87px;
   }
 
+  /* Media queries para dispositivos Desktop e Mobile */
 @media (max-width: 1024px) {
-    .cardDolar {
-        width: 300px;
-    }
-    .cardDolarCarregando {
-        width: 300px;
-    }
-    .headerDolar {
-        width: 300px;
-    }
-    .bodyDolar {
-        width: 300px;
-    }
-    .footerDolar {
+    .cardDolar, .cardDolarCarregando, .headerDolar, .bodyDolar, .footerDolar {
         width: 300px;
     }
   
 }
+
 @media (max-width: 600px) {
     .headerDolar {
         font-size: 25px;
         height: 85px;
+    }
+    .errorApi {
+        margin-top: 20px;
     }
     
     .bodyDolar {

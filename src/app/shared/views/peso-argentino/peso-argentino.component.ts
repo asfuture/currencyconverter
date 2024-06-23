@@ -17,6 +17,8 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
 })
 export class PesoArgentinoComponent implements OnInit, OnDestroy {
   valorPeso: CotacaoSimplificada[] = [];
+  loading: boolean = true;
+  erro: boolean = false;
 
   private unsubscribe = new Subject<void>();
   private subscription!:Subscription;
@@ -36,6 +38,15 @@ export class PesoArgentinoComponent implements OnInit, OnDestroy {
           //this.route.navigateByUrl('');
           console.log('Chamando a função getvalor a cada 3 minutos')
         }, 180000) // 3 minutos
+    }
+
+    recarregarComponent() {
+      this.setupLocalStorage();
+      this.getValor();
+      console.log('Recarregar novamente');
+      this.route.navigateByUrl('/').then(() =>{
+        console.log('Navegação ok');
+      })
     }
       // valida
     private setupLocalStorage(): void {
@@ -65,6 +76,8 @@ export class PesoArgentinoComponent implements OnInit, OnDestroy {
             localStorage.setItem(this.localStorageKey, JSON.stringify(response));
           },
           error:(error) => {
+            this.loading = false;
+            this.erro   = true;
             console.log("Erro ao fezer requisição dos valores ", error)
           }
         })

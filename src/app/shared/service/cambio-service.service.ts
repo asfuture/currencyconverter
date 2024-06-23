@@ -3,7 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 import { Cotacao, CotacaoSimplificada } from '../model/cotacao';
-import { Observable, tap, map, timer, switchMap } from 'rxjs';
+import { Observable, map, timer, switchMap, catchError, EMPTY } from 'rxjs';
+
+//Serviço para buscar e fornecer dados de taxa de câmbio em tempo real para moedas CAD, GBP e ARS.
 
 @Injectable({
   providedIn: 'root'
@@ -11,60 +13,75 @@ import { Observable, tap, map, timer, switchMap } from 'rxjs';
 export class CambioServiceService {
 
   private readonly apiUrl:string = environment.apiUrl;
-  private readonly intervalTime:number = 175000;
-  private geral$: Observable<{CADBRL:Cotacao,GBPBRL:Cotacao,ARSBRL:Cotacao}>;
+  private readonly intervaloAtualizacao:number = 175_000; // 2 minutos e 55 segundos 
+  private cotacoesObservavel$: Observable<{ CADBRL: Cotacao; GBPBRL: Cotacao; ARSBRL: Cotacao }>;
 
-  constructor( private http:HttpClient ) {
-    this.geral$ = timer(0,this.intervalTime).pipe(
-      switchMap(() => this.getGeral()),
-      //tap(response => console.log('Dados Gerais 1', response))
-      )
+  constructor( private http: HttpClient ) {
+    this.cotacoesObservavel$ = timer(0, this.intervaloAtualizacao).pipe(
+      switchMap(() => this.buscarCotacoes()),
+      catchError(error => {
+        console.error('Erro ao buscar cotações:', error);
+        return EMPTY;
+      })
+    );
    }
   
-  getGeral():Observable<{CADBRL:Cotacao,GBPBRL:Cotacao,ARSBRL:Cotacao}>{
-  return this.http.get<{CADBRL:Cotacao,GBPBRL:Cotacao,ARSBRL:Cotacao}>(`${this.apiUrl}/CAD-BRL,GBP-BRL,ARS-BRL`)
-      // .pipe(
-      //   //tap(response => console.log('Dados Gerais 2', response))
-      // )
+  //Busca as últimas taxas de câmbio para CAD, GBP e ARS da API.
+   private buscarCotacoes(): Observable<{ CADBRL: Cotacao; GBPBRL: Cotacao; ARSBRL:Cotacao }> {
+    const url = `${this.apiUrl}/CAD-BRL,GBP-BRL,ARS-BRL`;
+    return this.http.get<{ CADBRL:Cotacao; GBPBRL:Cotacao; ARSBRL:Cotacao }>(url).pipe(
+      catchError(error => {
+        console.error('Erro ao buscar cotações:', error);
+        return EMPTY
+      })
+    );
   }
 
+  // Recupera as informações de taxa de câmbio atual para o Dólar Canadense (CAD).
   getDolarCanadense(): Observable<CotacaoSimplificada> {
-    return this.geral$.pipe(
-     tap(response => console.log('Dolar', response)),
+    return this.cotacoesObservavel$.pipe(
+      catchError(error => {
+        console.error('Erro ao obter cotação do Dólar Canadense:', error);
+        return EMPTY;
+      }),
      map(response => {
       const dolar = response.CADBRL;
       return {
-                ask: dolar.ask,
-                pctChange: dolar.pctChange,
-                create_date: dolar.create_date
+                ask: dolar.ask, //Taxa de Venda
+                pctChange: dolar.pctChange, //Porcentagem de Variação
+                create_date: dolar.create_date // Data de Criação
           };
        })
     );
   }
 
+  //Recupera as informações de taxa de câmbio atual para a Libra Esterlina (GBP).
   getLibraEsterlina(): Observable<CotacaoSimplificada> {
-    return this.geral$.pipe(
-     tap(response => console.log('Libra', response)),
+    return this.cotacoesObservavel$.pipe(
+      catchError(error => {
+        console.error('Erro ao obter cotação do Libra Esterlina:', error);
+        return EMPTY;
+      }),
      map(response => {
       const libra = response.GBPBRL;
       return {
-                ask: libra.ask,
-                pctChange: libra.pctChange,
-                create_date:libra.create_date
+                ask: libra.ask, //Taxa de Venda
+                pctChange: libra.pctChange, //Porcentagem de Variação
+                create_date:libra.create_date // Data de Criação
           };
        })
     );
   }
 
+  //Recupera as informações de taxa de câmbio atual para o Peso Argentino (ARS).
   getPesoArgentino(): Observable<CotacaoSimplificada> {
-    return this.geral$.pipe(
-     tap(response => console.log('Peso', response)),
+    return this.cotacoesObservavel$.pipe(
      map(response => {
       const peso = response.ARSBRL;
       return {
-                ask: peso.ask,
-                pctChange: peso.pctChange,
-                create_date:peso.create_date
+                ask: peso.ask, //Taxa de Venda
+                pctChange: peso.pctChange, //Porcentagem de Variação
+                create_date:peso.create_date // Data de Criação
           };
        })
     );
