@@ -115,14 +115,17 @@ firebase deploy
 1. Para baixar a imagem Docker da aplicação, utilize o comando:
 
 ```bash
-docker pull asfuture/currencyconverter
+docker pull asfuture/currencyconverter:latest
 ```
 
 2. Para rodar a aplicação usando Docker, utilize o comando:
 
 ```bash
-docker run -p 8080:80 asfuture/currencyconverter
+docker run -p 8080:80 asfuture/currencyconverter:latest
 ```
 
 3. Acesse a aplicação no navegador:
+   
 http://localhost:8080
+
+#### Autor: Alex Ferreira
