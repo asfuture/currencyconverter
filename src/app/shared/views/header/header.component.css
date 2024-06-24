@@ -13,7 +13,7 @@ svg {
 }
 
 /* Mídia query para telas até 800px de largura */
-@media (max-width: 850px) {
+@media (max-width: 900px) {
     .container {
         position: fixed;
         top: 0px;
