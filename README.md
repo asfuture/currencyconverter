@@ -2,7 +2,7 @@
 
 ## Descrição
 
-Esta aplicação é uma ferramenta para mostrar a conversão de três moedas para Real Brasileiro (BRL). As moedas convertidas são:
+Esta aplicação é uma ferramenta simples para mostrar a conversão de três moedas para Real Brasileiro (BRL). As moedas convertidas são:
 
 - Dólar Canadense (CAD)
 - Peso Argentino (ARS)
@@ -15,7 +15,7 @@ A aplicação exibe a quantia equivalente de uma unidade de cada moeda em BRL, a
 
 As informações são cacheadas no front-end por 3 minutos e atualizadas automaticamente a cada 3 minutos.
 
-A aplicação está hospedada no Firebase e pode ser acessada [aqui](https://freterapido-currencyconverter.web.app/).
+A aplicação está hospedada no Firebase e pode ser acessada por este link: https://freterapido-currencyconverter.web.app/
 
 ## Tecnologias Utilizadas
 
@@ -67,3 +67,58 @@ Para executar os testes unitários, utilize o comando:
 
 ```bash
 ng test
+```
+
+### Hospedar projeto no Firebase
+A aplicação está hospedada no Firebase e pode ser acessada aqui.
+
+--Pré-requisitos
+-Conta no Firebase
+-Firebase CLI
+
+####Passos para Hospedar no Firebase
+
+-Faça login no Firebase CLI:
+
+```bash
+firebase login
+```
+####Inicialize o projeto Firebase no diretório do projeto:
+
+bash
+
+```bash
+firebase init
+```
+-Selecione "Hosting"
+-Escolha o projeto no Firebase
+-Configure o diretório público como "dist/currency-converter"
+-Configure como um aplicativo de página única (single-page app)
+
+####Construa a aplicação para produção:
+
+```bash
+ng build --prod
+```
+
+###Faça o deploy da aplicação:
+
+```bash
+firebase deploy
+```
+
+6. Utilizando Docker
+
+####Para baixar a imagem Docker da aplicação, utilize o comando:
+```bash
+docker pull asfuture/currencyconverter
+```
+Para rodar a aplicação usando Docker, utilize o comando:
+
+```bash
+docker run -p 8080:80 asfuture/currencyconverter
+```
+
+Acesse a aplicação no navegador:
+
+http://localhost:8080
