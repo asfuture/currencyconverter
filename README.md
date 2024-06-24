@@ -1,6 +1,5 @@
 # Currency Converter 
 
-## Descrição
 
 Esta aplicação é uma ferramenta para mostrar a conversão de três moedas para Real Brasileiro (BRL). As moedas convertidas são:
 
