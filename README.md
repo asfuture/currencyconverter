@@ -1,8 +1,8 @@
-# Currency Converter Application
+# Currency Converter 
 
 ## Descrição
 
-Esta aplicação é uma ferramenta simples para mostrar a conversão de três moedas para Real Brasileiro (BRL). As moedas convertidas são:
+Esta aplicação é uma ferramenta para mostrar a conversão de três moedas para Real Brasileiro (BRL). As moedas convertidas são:
 
 - Dólar Canadense (CAD)
 - Peso Argentino (ARS)
@@ -20,6 +20,7 @@ A aplicação está hospedada no Firebase e pode ser acessada por este link: htt
 ## Tecnologias Utilizadas
 
 - Angular 18.0.0
+- Node v20.11.0
 - HTML5
 - CSS3
 - TypeScript
@@ -68,57 +69,61 @@ Para executar os testes unitários, utilize o comando:
 ```bash
 ng test
 ```
+## Utilizando Firebase
+### Passos para Hospedar Projeto no Firebase
+### Pré-requisitos
+- Conta no Firebase
+- Firebase CLI
 
-### Hospedar projeto no Firebase
-A aplicação está hospedada no Firebase e pode ser acessada aqui.
+1. Para instalar o Firebase CLI, utilize o comando:
+  
+  ```bash
+  npm install -g firebase-tools
+  ```
 
---Pré-requisitos
--Conta no Firebase
--Firebase CLI
+2. Faça login no Firebase CLI:
 
-####Passos para Hospedar no Firebase
+  ```bash
+  firebase login
+  ```
 
--Faça login no Firebase CLI:
+3. Inicialize o projeto Firebase no diretório do projeto: 
 
-```bash
-firebase login
-```
-####Inicialize o projeto Firebase no diretório do projeto:
+  ```bash
+  firebase init
+  ```
 
-bash
+- Selecione "Hosting"
+- Escolha o projeto no Firebase
+- Configure o diretório público como "dist/nome-do-seu-projeto"
+- Configure como um aplicativo de página única (single-page app)
 
-```bash
-firebase init
-```
--Selecione "Hosting"
--Escolha o projeto no Firebase
--Configure o diretório público como "dist/currency-converter"
--Configure como um aplicativo de página única (single-page app)
-
-####Construa a aplicação para produção:
+3. Construa a aplicação para produção:
 
 ```bash
 ng build --prod
 ```
 
-###Faça o deploy da aplicação:
+4. Faça o deploy da aplicação:
 
 ```bash
 firebase deploy
 ```
 
-6. Utilizando Docker
+## Utilizando Docker
+### Passos para Baixar a imagem Docker
 
-####Para baixar a imagem Docker da aplicação, utilize o comando:
+1. Para baixar a imagem Docker da aplicação, utilize o comando:
+
 ```bash
 docker pull asfuture/currencyconverter
 ```
-Para rodar a aplicação usando Docker, utilize o comando:
+
+2. Para rodar a aplicação usando Docker, utilize o comando:
 
 ```bash
 docker run -p 8080:80 asfuture/currencyconverter
 ```
 
-Acesse a aplicação no navegador:
-
+3. Acesse a aplicação no navegador:
 http://localhost:8080
