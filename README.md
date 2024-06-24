@@ -1,27 +1,69 @@
-# Currencyconverter
-### Link: https://freterapido-currencyconverter.web.app/
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.4.
+# Currency Converter Application
 
-## Development server
+## Descrição
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Esta aplicação é uma ferramenta para mostrar a conversão de três moedas para Real Brasileiro (BRL). As moedas convertidas são:
 
-## Code scaffolding
+- Dólar Canadense (CAD)
+- Peso Argentino (ARS)
+- Libra Esterlina (GBP)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+A aplicação exibe a quantia equivalente de uma unidade de cada moeda em BRL, a variação em porcentagem, a hora da última atualização e formata os valores conforme as seguintes regras:
+- Valores menores ou iguais a R$1,00 são exibidos em vermelho;
+- Valores maiores que R$1,00 e menores ou iguais a R$5,00 são exibidos em verde;
+- Valores maiores que R$5,00 são exibidos em azul.
 
-## Build
+As informações são cacheadas no front-end por 3 minutos e atualizadas automaticamente a cada 3 minutos.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+A aplicação está hospedada no Firebase e pode ser acessada [aqui](https://freterapido-currencyconverter.web.app/).
 
-## Running unit tests
+## Tecnologias Utilizadas
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- Angular 18.0.0
+- HTML5
+- CSS3
+- TypeScript
+- RxJS
+- Jasmine (para testes unitários)
+- Karma
 
-## Running end-to-end tests
+## Como Rodar o Projeto
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### Pré-requisitos
 
-## Further help
+- Node.js (v20.11.0)
+- Angular CLI
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Passos para Rodar o Projeto Localmente
+
+1. Clone o repositório:
+
+    ```bash
+    git clone https://github.com/asfuture/currencyconverter.git
+    cd currencyconverter
+    ```
+
+2. Instale as dependências:
+
+    ```bash
+    npm install
+    ```
+
+3. Rode a aplicação:
+
+    ```bash
+    ng serve
+    ```
+
+4. Acesse a aplicação no navegador:
+
+    ```
+    http://localhost:4200
+    ```
+
+### Executando Testes
+
+Para executar os testes unitários, utilize o comando:
+
+```bash
+ng test
