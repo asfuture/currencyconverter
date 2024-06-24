@@ -11,4 +11,4 @@ COPY --from=currencyconverter /app/dist/currencyconverter /usr/share/nginx/html
 COPY ./config/nginx.conf etc/nginx/conf.d/default.conf
 
 # docker build -t currencyconverter .
-# docker run -p 8082:80 currencyconverter
+# docker run -p 8080:80 currencyconverter
