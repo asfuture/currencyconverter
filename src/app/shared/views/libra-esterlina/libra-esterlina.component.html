@@ -1,23 +1,23 @@
 <section [ngClass]="{
     'errorCard': hasError, 
-    'loadingCard': cotacaoLibraEsterlina.length === 0,
-    'dataCard': cotacaoLibraEsterlina.length > 0
+    'loadingCard': cotacaoLibraEsterlina === null,
+    'dataCard': cotacaoLibraEsterlina
   }">
-    <div class="container" *ngIf="cotacaoLibraEsterlina && cotacaoLibraEsterlina.length; else loading">
+    <div class="container" *ngIf="cotacaoLibraEsterlina ; else loading">
         <div class="cardHeader">
             <p>Libra Esterlina</p>
         </div>
         <div class="cardBody">
-            <span [ngClass]="getBidClass(cotacaoLibraEsterlina[0].ask)">{{ cotacaoLibraEsterlina[0].ask | currency: 'BRL':  'symbol' : '1.2-2' }}</span>
+            <span [ngClass]="getBidClass(cotacaoLibraEsterlina.ask)">{{ cotacaoLibraEsterlina.ask | currency: 'BRL':  'symbol' : '1.2-2' }}</span>
         </div>
         <div class="cardFooter">
             <div class="texto1">
                 <p class="variacao">Variação (%)</p>
-                <p class="variacaoValor">{{ cotacaoLibraEsterlina[0].pctChange }}</p>
+                <p class="variacaoValor">{{ cotacaoLibraEsterlina.pctChange }}</p>
             </div>
             <div class="texto2">
                 <p class="textoAtualiza">Atualizado</p>
-                <p class="time">{{  cotacaoLibraEsterlina[0] ? formatTime(cotacaoLibraEsterlina[0].create_date) : '' }}</p>
+                <p class="time">{{  cotacaoLibraEsterlina ? formatTime(cotacaoLibraEsterlina.create_date) : '' }}</p>
             </div>
         </div>
         
