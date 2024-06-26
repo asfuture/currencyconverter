@@ -1,95 +1,94 @@
 import { TestBed, ComponentFixture, fakeAsync, tick } from '@angular/core/testing';
-import { LibraEsterlinaComponent } from './libra-esterlina.component';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { CambioService } from '../../service/cambio.service';
 import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { of, map } from 'rxjs';
+import { LibraEsterlinaComponent } from './libra-esterlina.component';
+import { CambioService } from '../../service/cambio.service';
 import { CotacaoSimplificada } from '../../model/cotacao';
 
 describe('LibraEsterlinaComponent', () => {
   let component: LibraEsterlinaComponent;
   let fixture: ComponentFixture<LibraEsterlinaComponent>;
+  let cambioService: CambioService;
+  let router: Router;
   let cambioServiceSpy: jasmine.SpyObj<CambioService>;
-  let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
-    const cambioServiceMock = jasmine.createSpyObj('CambioService', ['getLibraEsterlina']);
-    const routerMock = jasmine.createSpyObj('Router', ['navigateByUrl']);
-
+    cambioServiceSpy = jasmine.createSpyObj('CambioService', ['cotacoes$']);
     await TestBed.configureTestingModule({
-      // Importando o componente standalone
       imports: [
         LibraEsterlinaComponent
       ],
       providers: [
-        { provide: CambioService, useValue: cambioServiceMock },
-        { provide: Router, useValue: routerMock },
-        provideHttpClientTesting(),
-        provideHttpClient()
+        { provide: CambioService, useValue: cambioServiceSpy },
+        { provide: Router, useValue: jasmine.createSpyObj('Router', ['navigateByUrl']) },
+        provideHttpClient(),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LibraEsterlinaComponent);
     component = fixture.componentInstance;
-    cambioServiceSpy = TestBed.inject(CambioService) as jasmine.SpyObj<CambioService>;
-    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    cambioService = TestBed.inject(CambioService) as CambioService;
+    router = TestBed.inject(Router);
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize localStorage on init if not set', () => {
-    localStorage.removeItem(component['storageKey']);
-    component.ngOnInit();
-    const cachedData = localStorage.getItem(component['storageKey']);
-    expect(cachedData).toBeTruthy();
-    expect(JSON.parse(cachedData || '')).toEqual({
-      ask:'0.006',
-      create_date:'22:54:15',
-      pctChange: '0'
-    });
-  });
-
-  it('should get cotacao on init', () => {
-    const mockCotacao: CotacaoSimplificada = { ask: '1.23', pctChange: '0.1', create_date: '2023-01-01 12:00:00' };
-    cambioServiceSpy.getLibraEsterlina.and.returnValue(of(mockCotacao));
-    component.ngOnInit();
-    expect(component.cotacaoLibraEsterlina).toEqual([mockCotacao]);
-  });
-
-  it('should handle error on getCotacao', () => {
-    cambioServiceSpy.getLibraEsterlina.and.returnValue(throwError('error'));
-    component.getCotacao();
-    expect(component.isLoading).toBeFalse();
-    expect(component.hasError).toBeTrue();
-  });
-
-  it('should set the correct class for bid value', () => {
-    expect(component.getBidClass('0.9')).toBe('red');
-    expect(component.getBidClass('3.5')).toBe('green');
-    expect(component.getBidClass('5.1')).toBe('blue');
-  });
-
-  it('should format time correctly', () => {
-    const formattedTime = component.formatTime('2023-01-01 12:00:00');
-    expect(formattedTime).toBe('12:00:00');
+  it('should initialize with isLoading true and hasError false', () => {
+    expect(component.isLoading).toBe(true);
+    expect(component.hasError).toBe(false);
   });
 
   it('should reload component and navigate to root', fakeAsync(() => {
     component.recarregarComponent();
     tick();
-    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/');
   }));
 
-  it('should unsubscribe and complete destroy$ on destroy', () => {
-    const completeSpy = spyOn(component['destroy$'], 'complete').and.callThrough();
-    const nextSpy = spyOn(component['destroy$'], 'next').and.callThrough();
+  it('should return correct CSS class based on bid value', () => {
+    expect(component.getBidClass('0.9')).toBe('red');
+    expect(component.getBidClass('3.5')).toBe('green');
+    expect(component.getBidClass('5.1')).toBe('blue');
+  });
 
-    component.ngOnDestroy();
+  it('should format time correctly from creation date', () => {
+    const formattedTime = component.formatTime('2023-01-01 12:00:00');
+    expect(formattedTime).toBe('12:00:00');
+  });
 
-    expect(nextSpy).toHaveBeenCalled();
-    expect(completeSpy).toHaveBeenCalled();
+  it('should handle successful data retrieval', () => {
+    const mockData: CotacaoSimplificada = {
+      ask: '4.50',
+      pctChange: '0.5',
+      create_date: '2024-06-26 10:00:00'
+    };
+
+    cambioServiceSpy.cotacoes$.pipe(map(response => {GBPBRL: mockData})
+    )
+
+    fixture.detectChanges(); // Trigger ngOnInit()
+
+    expect(component.isLoading).toBe(false);
+    expect(component.hasError).toBe(false);
+    expect(component.cotacaoLibraEsterlina).toEqual(mockData);
+  });
+
+  it('should handle error during data retrieval', () => {
+    const mockError = new Error('API Error');
+    
+    spyOn<any>(cambioService, 'cotacoes').and.returnValue(of(mockError));
+    fixture.detectChanges(); // Trigger ngOnInit()
+
+    expect(component.isLoading).toBe(false);
+    expect(component.hasError).toBe(true);
+    expect(component.cotacaoLibraEsterlina).toBeNull();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 });

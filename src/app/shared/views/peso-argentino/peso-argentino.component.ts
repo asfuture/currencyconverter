@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { Subscription} from 'rxjs';
+
 
 import { CotacaoSimplificada } from '../../model/cotacao';
 import { CambioService } from '../../service/cambio.service';
@@ -16,75 +17,47 @@ import { CambioService } from '../../service/cambio.service';
   providers: [HttpClient]
 })
 export class PesoArgentinoComponent implements OnInit, OnDestroy {
-  cotacaoPesoArgentino: CotacaoSimplificada[] = []; 
-
+  cotacaoPesoArgentino: CotacaoSimplificada | null = null;
+  private subscription: Subscription | null = null;
   isLoading = true; 
   hasError = false; 
 
-  private destroy$ = new Subject<void>(); 
-  private cotacaoSubscription?: Subscription; 
-  private readonly storageKey = 'pesoArgentino'; 
-
-  constructor(
-    private cambioService: CambioService,
-    private router: Router 
-  ) {}
+    constructor(
+      private cambioService: CambioService,
+      private router: Router 
+    ) {}
 
   ngOnInit(): void {
-    this.inicializaLocalStorage();
-    this.getCotacao();
+    this.subscription = this.cambioService.cotacoes$.subscribe({
+      next: (cotacoes) => {
+        this.isLoading = false;
+      if (cotacoes.ARSBRL) {
+        this.cotacaoPesoArgentino = {
+          ask: cotacoes.ARSBRL.ask,
+          pctChange: cotacoes.ARSBRL.pctChange,
+          create_date: cotacoes.ARSBRL.create_date
+        };
+        this.hasError = false;
+      }else{
+        this.hasError = true;
+      }
+    },
+    error: (error) => {
+      this.isLoading = false;
+      this.hasError = true;
+      console.error('Erro ao buscar cotações:', error);
+    }
+   });
 
-    // Chamando a função a cada 3 minutos (180000 ms)
-    setInterval(() => {
-      this.inicializaLocalStorage();
-      this.getCotacao();
-      //console.log('Atualizando cotação a cada 3 minutos');
-    }, 180000);
   }
 
   // Função para recarregar o componente
   recarregarComponent(): void {
-    this.inicializaLocalStorage();
-    this.getCotacao();
     console.log('Recarregando componente');
     this.router.navigateByUrl('/').then(() => {
       console.log('Navegação concluída');
     });
   }
-
-  // Inicializa o localStorage com um valor padrão, se necessário
-  private inicializaLocalStorage(): void {
-    //console.log('Verificando localStorage');
-    const cachedData = localStorage.getItem(this.storageKey);
-    if (!cachedData) {
-      const defaultValue: CotacaoSimplificada = {
-        ask: '',
-        pctChange: '',
-        create_date: ''
-      };
-      localStorage.setItem(this.storageKey, JSON.stringify(defaultValue));
-    }
-  }
-
-  // Obtém a cotação do serviço
-  getCotacao(): void {
-    this.cotacaoSubscription?.unsubscribe();
-
-    this.cotacaoSubscription = this.cambioService.getPesoArgentino().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (cotacao: CotacaoSimplificada) => {
-        this.cotacaoPesoArgentino = [cotacao];
-        localStorage.setItem(this.storageKey, JSON.stringify(cotacao));
-      },
-      error: (error) => {
-        this.isLoading = false;
-        this.hasError = true;
-        console.error("Erro ao obter cotação", error);
-      }
-    });
-  }
-
   // Determina a classe CSS baseada no valor do bid
   getBidClass(bid: string): string {
     const bidValue = parseFloat(bid.replace(',', '.'));
@@ -97,16 +70,13 @@ export class PesoArgentinoComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    //console.log('Destruindo componente');
-    this.destroy$.next();
-    this.destroy$.complete();
-    this.cotacaoSubscription?.unsubscribe();
-  }
-
   // Formata a hora a partir da data de criação
   formatTime(createDate: string): string {
-    const [, time] = createDate.split(' ');
+    const [hora, time] = createDate.split(' ');
     return time;
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 }
