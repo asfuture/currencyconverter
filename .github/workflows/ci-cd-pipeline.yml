@@ -1,0 +1,44 @@
+name: CI/CD Pipeline
+
+# Disparadores do workflow
+on:
+  push:
+    branches:
+      - main  # Executa quando há um push na branch main
+  pull_request:
+    branches:
+      - main  # Executa quando um pull request é aberto para a branch main
+
+# Definição do job que será executado
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Usa a última versão do Ubuntu como máquina virtual
+
+    steps:
+      # Passo 1: Faz o checkout do código
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Passo 2: Configura a versão do Node.js (ou outra linguagem que você usar)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '21'  # Defina a versão do Node.js (alterável conforme o projeto)
+
+      # Passo 3: Instala dependências
+      - name: Install dependencies
+        run: npm install
+
+      # Passo 4: Executa testes
+      - name: Run tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+
+      # Passo 5: Gera a build do projeto
+      - name: Build project
+        run: npm run build --prod
+
+      # Passo 6: Faz o deploy para Vercel (ou outra plataforma)
+      - name: Deploy to Vercel
+        run: vercel --prod  # Use a CLI do Vercel para fazer o deploy
+        env:
+          VERCEL_TOKEN: ${{ env.VERCEL_TOKEN }}  # Token para autenticação com Vercel
