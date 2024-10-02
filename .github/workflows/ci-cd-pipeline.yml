@@ -4,10 +4,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Executa quando há um push na branch main
+      - master  # Executa quando há um push na branch main
   pull_request:
     branches:
-      - main  # Executa quando um pull request é aberto para a branch main
+      - master  # Executa quando um pull request é aberto para a branch main
 
 # Definição do job que será executado
 jobs:
