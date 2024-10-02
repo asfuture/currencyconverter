@@ -1,0 +1,44 @@
+{
+    "last": {
+      "CADBRL": {
+        "code": "CAD",
+        "codein": "BRL",
+        "name": "Dólar Canadense/Real Brasileiro",
+        "high": "3.9794",
+        "low": "3.936",
+        "varBid": "-0.0349",
+        "pctChange": "-0.88",
+        "bid": "3.9418",
+        "ask": "3.9472",
+        "timestamp": "1719252036",
+        "create_date": "2024-06-24 15:00:36"
+      },
+      "GBPBRL": {
+        "code": "GBP",
+        "codein": "BRL",
+        "name": "Libra Esterlina/Real Brasileiro",
+        "high": "6.8871",
+        "low": "6.8213",
+        "varBid": "-0.0378",
+        "pctChange": "-0.55",
+        "bid": "6.8311",
+        "ask": "6.8349",
+        "timestamp": "1719252036",
+        "create_date": "2024-06-24 15:00:36"
+      },
+      "ARSBRL": {
+        "code": "ARS",
+        "codein": "BRL",
+        "name": "Peso Argentino/Real Brasileiro",
+        "high": "0.006",
+        "low": "0.0059",
+        "varBid": "-0.0001",
+        "pctChange": "-1.66",
+        "bid": "0.0059",
+        "ask": "0.0059",
+        "timestamp": "1719252028",
+        "create_date": "2024-06-24 15:00:28"
+      }
+    }
+  }
+  
