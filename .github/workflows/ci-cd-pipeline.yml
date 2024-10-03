@@ -41,4 +41,5 @@ jobs:
       - name: Deploy to Vercel
         run: vercel --prod  # Use a CLI do Vercel para fazer o deploy
         env:
-          VERCEL_TOKEN: ${{ env.VERCEL_TOKEN }}  # Token para autenticação com Vercel
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}  # Use secrets ao invés de env
+ # Token para autenticação com Vercel
