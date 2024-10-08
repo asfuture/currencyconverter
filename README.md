@@ -26,6 +26,7 @@ A aplicação está hospedada no Firebase e pode ser acessada por este link: htt
 - RxJS
 - Jasmine (para testes unitários)
 - Karma
+- CI/CD (Continuous Integration/Continuous Delivery)
 
 ## Como Rodar o Projeto
 
