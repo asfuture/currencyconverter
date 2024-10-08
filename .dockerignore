@@ -27,5 +27,6 @@
 **/.firebaserc
 **/firebase.json
 **/.angular
+**/.github
 LICENSE
 README.md
