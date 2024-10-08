@@ -11,7 +11,7 @@ export class HeaderComponent implements OnInit {
 
 
  ngOnInit(): void {
- 
+    alert("Testando a automatização para criar Image Docker");
  }
 
 }
