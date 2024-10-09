@@ -14,5 +14,5 @@ import { LibraEsterlinaComponent } from './shared/views/libra-esterlina/libra-es
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'currencyconverter';
+  //title = 'currencyconverter';
 }
